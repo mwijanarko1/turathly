@@ -1,46 +1,54 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Source_Sans_3 } from "next/font/google";
+import { Fraunces } from "next/font/google";
+import { Noto_Naskh_Arabic } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
+import { ConvexClientProvider } from "@/lib/providers";
 import "./globals.css";
 
-// Initialize the Geist font with Latin subset
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const sourceSans = Source_Sans_3({
+  variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-// Initialize the Geist Mono font with Latin subset
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fraunces = Fraunces({
+  variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const notoNaskhArabic = Noto_Naskh_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#111827" },
-  ],
+  themeColor: "#5A4B81",
 };
 
-// Define metadata for better SEO
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: "Next.js Beginner Template",
-  description: "A beginner-friendly Next.js template with TailwindCSS and TypeScript",
-  keywords: ["Next.js", "React", "TailwindCSS", "TypeScript", "Template"],
-  authors: [{ name: "Created with Cursor Agent" }],
-  creator: "Cursor Agent",
-  publisher: "Cursor Agent",
+  title: {
+    default: "Turathly — Context-aware translation for Islamic texts",
+    template: "%s | Turathly",
+  },
+  description: "A translation workspace designed for scholars working with classical Islamic books. Upload PDFs, OCR Arabic text, and translate with AI assistance.",
+  keywords: ["Islamic texts", "Arabic translation", "OCR", "AI translation", "classical Arabic", "Islamic scholarship"],
+  authors: [{ name: "Turathly" }],
+  creator: "Turathly",
   openGraph: {
-    title: "Next.js Beginner Template",
-    description: "A beginner-friendly Next.js template with TailwindCSS and TypeScript",
-    url: "https://nextjs.org/",
-    siteName: "Next.js Beginner Template",
+    title: "Turathly — Context-aware translation for Islamic texts",
+    description: "A translation workspace designed for scholars working with classical Islamic books.",
+    url: "https://turathly.com",
+    siteName: "Turathly",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Next.js Beginner Template",
+        alt: "Turathly - Islamic Text Translation",
       },
     ],
     locale: "en_US",
@@ -48,8 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Next.js Beginner Template",
-    description: "A beginner-friendly Next.js template with TailwindCSS and TypeScript",
+    title: "Turathly — Context-aware translation for Islamic texts",
+    description: "A translation workspace designed for scholars working with classical Islamic books.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -64,18 +72,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
-      >
-        <a
-          href="#main-content"
-          className="absolute -top-12 left-4 z-50 px-4 py-2 bg-indigo-600 text-white rounded-md transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Skip to main content
-        </a>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <ConvexClientProvider>
+        <html lang="en" suppressHydrationWarning>
+          <body
+            className={`${sourceSans.variable} ${fraunces.variable} ${notoNaskhArabic.variable} antialiased bg-background text-foreground`}
+          >
+            <a
+              href="#main-content"
+              className="absolute -top-12 left-4 z-50 px-4 py-2 bg-primary text-primary-foreground rounded-md transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              Skip to main content
+            </a>
+            {children}
+          </body>
+        </html>
+      </ConvexClientProvider>
+    </ClerkProvider>
   );
 }
