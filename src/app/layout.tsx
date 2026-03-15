@@ -38,16 +38,23 @@ export const metadata: Metadata = {
   keywords: ["Islamic texts", "Arabic translation", "OCR", "AI translation", "classical Arabic", "Islamic scholarship"],
   authors: [{ name: "Turathly" }],
   creator: "Turathly",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL ?? "https://turathly.com",
+  },
   openGraph: {
     title: "Turathly — Context-aware translation for Islamic texts",
     description: "A translation workspace designed for scholars working with classical Islamic books.",
-    url: "https://turathly.com",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://turathly.com",
     siteName: "Turathly",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
+        url: "/logo.png",
+        width: 512,
+        height: 512,
         alt: "Turathly - Islamic Text Translation",
       },
     ],
@@ -58,7 +65,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Turathly — Context-aware translation for Islamic texts",
     description: "A translation workspace designed for scholars working with classical Islamic books.",
-    images: ["/og-image.png"],
+    images: ["/logo.png"],
   },
   robots: {
     index: true,
@@ -72,12 +79,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <ConvexClientProvider>
-        <html lang="en" suppressHydrationWarning>
-          <body
-            className={`${sourceSans.variable} ${fraunces.variable} ${notoNaskhArabic.variable} antialiased bg-background text-foreground`}
-          >
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${sourceSans.variable} ${fraunces.variable} ${notoNaskhArabic.variable} antialiased bg-background text-foreground`}
+      >
+        <ClerkProvider
+          signInUrl="/sign-in"
+          signUpUrl="/sign-up"
+          signInForceRedirectUrl="/dashboard"
+          signUpForceRedirectUrl="/dashboard"
+          afterSignOutUrl="/"
+        >
+          <ConvexClientProvider>
             <a
               href="#main-content"
               className="absolute -top-12 left-4 z-50 px-4 py-2 bg-primary text-primary-foreground rounded-md transition-[top] duration-200 focus:top-4 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -85,9 +98,9 @@ export default function RootLayout({
               Skip to main content
             </a>
             {children}
-          </body>
-        </html>
-      </ConvexClientProvider>
-    </ClerkProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }

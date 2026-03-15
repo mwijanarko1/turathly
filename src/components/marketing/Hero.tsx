@@ -5,45 +5,35 @@ import { ArrowRight, Sparkles, Languages, Search, FileText } from "lucide-react"
 export function Hero() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden pt-32 pb-24">
-      {/* Background patterns */}
-      <div className="absolute inset-0 grid-background pointer-events-none opacity-40 z-0" />
-      
-      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center mb-20">
-        <div className="mb-6 inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-primary/5 border border-primary/20 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs text-primary font-semibold uppercase tracking-wider">
-            Now with advanced Arabic OCR
-          </span>
-        </div>
-        
-        <h1 className="font-heading text-5xl md:text-8xl font-bold text-foreground mb-8 tracking-tighter leading-[1.05] animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
-          Translate Islamic texts
-          <br />
-          <span className="text-primary italic font-medium">with scholarship.</span>
-        </h1>
-        
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed font-light animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-          A translation workbench designed for scholars and students working with classical Arabic manuscripts and Islamic books.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-500">
-          <Link href="/sign-up">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 h-14 rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:scale-105 transition-all active:scale-95 group">
-              Start Translating
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="#features">
-            <Button variant="ghost" size="lg" className="text-lg px-8 h-14 rounded-full hover:bg-primary/5 border border-transparent hover:border-primary/10 transition-all">
-              See how it works
-            </Button>
-          </Link>
+      {/* Painterly background effect */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[80%] opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/30 via-background to-background" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[60%] opacity-10 blur-[72px] bg-primary/20 rotate-12" />
+        <div className="absolute top-[20%] right-[-10%] w-[50%] h-[70%] opacity-10 blur-[88px] bg-accent/20 -rotate-12" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.18),transparent_22%),radial-gradient(circle_at_80%_10%,rgba(255,255,255,0.12),transparent_18%),radial-gradient(circle_at_50%_85%,rgba(255,255,255,0.12),transparent_20%)] pointer-events-none" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 mb-16">
+        <div className="max-w-4xl text-left">
+          <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-8 tracking-tighter leading-[1.05]">
+            Context-aware AI translations <br />
+            for Islamic texts.
+          </h1>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-start gap-5">
+            <Link href="/sign-up">
+              <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 text-base md:text-lg px-6 md:px-8 h-11 md:h-12 rounded-full">
+                Start Translating
+                <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* The Scholarly Workbench Mockup */}
-      <div className="relative z-20 w-full max-w-7xl mx-auto px-6 mt-10 animate-in fade-in slide-in-from-bottom-24 duration-1500 delay-700">
-        <div className="relative rounded-2xl p-2 bg-white/50 backdrop-blur-sm border border-border shadow-2xl overflow-hidden group">
+      <div className="relative z-20 w-full max-w-7xl mx-auto px-6">
+        <div className="relative rounded-2xl p-2 bg-white/50 border border-border shadow-2xl overflow-hidden">
           <div className="rounded-xl overflow-hidden border border-border bg-background aspect-[16/10] sm:aspect-[16/9] flex flex-col">
             {/* Toolbar mockup */}
             <div className="h-12 border-b border-border bg-muted/30 flex items-center justify-between px-4">
@@ -84,7 +74,7 @@ export function Hero() {
                 <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 flex items-center gap-2">
                   <Sparkles className="w-3 h-3" /> Extracted Arabic
                 </div>
-                <div className="flex-1 font-arabic text-right text-xl leading-relaxed text-foreground animate-pulse">
+                <div className="flex-1 font-arabic text-right text-xl leading-relaxed text-foreground">
                   بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
                   <br />
                   الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
@@ -111,7 +101,7 @@ export function Hero() {
                   <p>All praise is due to Allah, Lord of all the worlds.</p>
                   <p>The Entirely Merciful, the Especially Merciful.</p>
                   <p>Sovereign of the Day of Recompense.</p>
-                  <p className="animate-pulse">It is You we worship and You we ask for help...</p>
+                  <p>It is You we worship and You we ask for help...</p>
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent pointer-events-none" />
               </div>
@@ -119,8 +109,8 @@ export function Hero() {
           </div>
 
           {/* Glow effects */}
-          <div className="absolute -top-1/2 -left-1/4 w-1/2 h-full bg-primary/10 rounded-full blur-[120px] pointer-events-none group-hover:bg-primary/20 transition-colors duration-1000" />
-          <div className="absolute -bottom-1/2 -right-1/4 w-1/2 h-full bg-accent/10 rounded-full blur-[120px] pointer-events-none group-hover:bg-accent/20 transition-colors duration-1000" />
+          <div className="absolute -top-1/2 -left-1/4 w-1/2 h-full bg-primary/10 rounded-full blur-[88px] pointer-events-none" />
+          <div className="absolute -bottom-1/2 -right-1/4 w-1/2 h-full bg-accent/10 rounded-full blur-[88px] pointer-events-none" />
         </div>
       </div>
     </section>

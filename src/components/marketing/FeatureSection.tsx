@@ -9,11 +9,11 @@ const features = [
     image: (
       <div className="relative w-full h-full p-4 flex flex-col gap-4 overflow-hidden group">
         <div className="grid grid-cols-2 gap-4 h-full">
-          <div className="rounded-xl border border-border bg-muted/20 p-4 aspect-[4/5] flex items-center justify-center relative shadow-sm group-hover:scale-[1.02] transition-transform">
+          <div className="rounded-xl border border-border bg-muted/20 p-4 aspect-[4/5] flex items-center justify-center relative shadow-sm">
              <FileText className="w-16 h-16 text-primary/30" />
              <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">PDF</div>
           </div>
-          <div className="rounded-xl border border-border bg-muted/10 p-4 aspect-[4/5] flex items-center justify-center relative shadow-sm translate-y-8 group-hover:translate-y-4 transition-transform">
+          <div className="rounded-xl border border-border bg-muted/10 p-4 aspect-[4/5] flex items-center justify-center relative shadow-sm translate-y-8">
              <FileText className="w-16 h-16 text-secondary/30" />
              <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-secondary/10 text-secondary text-[10px] font-bold">IMAGE</div>
           </div>
@@ -28,10 +28,10 @@ const features = [
     description: "Powered by neural networks trained on classical Arabic typography. We extract text with precise page coordinates, maintaining the exact reading order of multi-column texts and annotations.",
     image: (
       <div className="relative w-full h-full p-6 flex flex-col gap-4 overflow-hidden group">
-        <div className="rounded-xl border border-border bg-background p-4 flex flex-col gap-3 shadow-lg group-hover:shadow-xl transition-all">
+        <div className="rounded-xl border border-border bg-background p-4 flex flex-col gap-3 shadow-lg">
           <div className="flex items-center justify-between border-b border-border pb-2 mb-2">
             <span className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">OCR Pipeline</span>
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
           </div>
           <div className="font-arabic text-xl leading-relaxed text-right text-foreground">
              <span className="bg-primary/10 border-b-2 border-primary/40 px-1 rounded-sm">فَإِنَّ</span> مَعَ الْعُسْرِ يُسْرًا
@@ -58,7 +58,7 @@ const features = [
     description: "Our AI understands the difference between literal and context-aware translation. It respects scholarly terminology, handles Qur'anic references automatically, and learns from your editing style.",
     image: (
       <div className="relative w-full h-full p-6 flex flex-col gap-4 overflow-hidden group">
-        <div className="rounded-xl border border-border bg-background p-6 shadow-lg group-hover:-translate-y-1 transition-transform">
+        <div className="rounded-xl border border-border bg-background p-6 shadow-lg">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
               <GraduationCap className="w-4 h-4 text-primary" />
@@ -69,7 +69,7 @@ const features = [
             </div>
           </div>
           <div className="space-y-4">
-             <div className="p-3 rounded-lg border border-border bg-muted/20 relative group-hover:bg-accent/5 transition-colors">
+             <div className="p-3 rounded-lg border border-border bg-muted/20 relative">
                <p className="text-[10px] font-bold text-muted-foreground uppercase mb-2">Literal</p>
                <p className="text-sm italic text-muted-foreground line-through decoration-destructive/50 font-serif">"blocking the means"</p>
              </div>
@@ -118,7 +118,7 @@ export function FeatureSection() {
                     {feature.description}
                   </p>
                   <div className="flex items-center justify-center lg:justify-start gap-4">
-                     <Button variant="outline" className="rounded-full px-6 font-semibold hover:bg-primary/5 border-primary/20 hover:border-primary/40 transition-all">
+                     <Button variant="outline" className="rounded-full px-6 font-semibold hover:bg-primary/5 border-primary/20 hover:border-primary/40">
                        Explore documentation
                      </Button>
                   </div>

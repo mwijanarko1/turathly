@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16 mb-24">
           <div className="md:col-span-1 space-y-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <BookOpen className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
+              <Image src="/logo.png" alt="Turathly" width={24} height={24} className="w-6 h-6" />
               <span className="font-heading text-xl font-bold tracking-tight text-primary">
                 Turathl<span className="text-accent italic">y</span>
               </span>
@@ -22,27 +22,27 @@ export function Footer() {
             <div className="space-y-4">
               <h4 className="font-heading text-sm font-bold uppercase tracking-widest text-primary">Product</h4>
               <ul className="space-y-3">
-                <li><Link href="#features" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Features</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Pricing</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">OCR Engine</Link></li>
+                <li><Link href="/product" className="text-sm text-muted-foreground hover:text-primary font-light">Features</Link></li>
+                <li><Link href="/pricing" className="text-sm text-muted-foreground hover:text-primary font-light">Pricing</Link></li>
+                <li><Link href="/product" className="text-sm text-muted-foreground hover:text-primary font-light">OCR Engine</Link></li>
               </ul>
             </div>
             
             <div className="space-y-4">
               <h4 className="font-heading text-sm font-bold uppercase tracking-widest text-primary">Resources</h4>
               <ul className="space-y-3">
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Documentation</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Guides</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Blog</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary font-light">Documentation</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary font-light">Guides</Link></li>
+                <li><Link href="/resources" className="text-sm text-muted-foreground hover:text-primary font-light">Blog</Link></li>
               </ul>
             </div>
             
             <div className="space-y-4">
               <h4 className="font-heading text-sm font-bold uppercase tracking-widest text-primary">Company</h4>
               <ul className="space-y-3">
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">About</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Support</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors font-light">Legal</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary font-light">About</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary font-light">Support</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-primary font-light">Legal</Link></li>
               </ul>
             </div>
           </div>
@@ -53,8 +53,8 @@ export function Footer() {
             © {new Date().getFullYear()} Turathly. All rights reserved.
           </p>
           <div className="flex items-center gap-8">
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light transition-colors">Privacy Policy</Link>
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light transition-colors">Terms of Service</Link>
+            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light">Privacy Policy</Link>
+            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light">Terms of Service</Link>
           </div>
         </div>
       </div>

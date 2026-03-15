@@ -1,172 +1,121 @@
-# Mikhail Builds Website Template for Beginners
+# Turathly — Context-aware translation for Islamic texts
 
-A modern, beginner-friendly Next.js template designed for rapid web development with Cursor IDE integration.
+A translation workspace designed for scholars working with classical Islamic books. Upload PDFs, OCR Arabic text, and translate with AI assistance.
 
 ## Tech Stack
 
 - **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript for type safety
 - **UI Library**: React 19
-- **Styling**: Tailwind CSS v4 with custom animations
-- **Development**: Turbopack for fast builds
-- **Linting**: ESLint with Next.js configuration
-- **Build Tool**: PostCSS with Autoprefixer
+- **Styling**: Tailwind CSS v4 with custom brand tokens
+- **Authentication**: Clerk
+- **Backend**: Convex (database, real-time subscriptions, functions)
+- **AI**: Google Gemini API for OCR and translation
+- **UI Components**: shadcn/ui
 
 ## Features
 
-- **Modern UI Components**: Pre-built Hero component with animated gradient backgrounds
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **TypeScript Support**: Full type checking and IntelliSense
-- **Custom Animations**: Blob animations and smooth transitions
-- **Developer Experience**: Optimized with Turbopack for lightning-fast development
-- **Cursor IDE Integration**: Designed to work seamlessly with Cursor's AI agent
-- **Authentication Ready**: Clerk integration guide included
-- **Backend Ready**: Convex database integration guide included
+- **PDF Upload**: Upload classical Arabic texts in PDF format
+- **Advanced OCR**: Extract Arabic text from scanned pages with high accuracy
+- **Context-Aware Translation**: AI understands Islamic terminology and scholarly context
+- **Three-Column Workspace**: Compare source, OCR, and translation side by side
+- **Auto-save**: Every edit persists automatically
+- **DOCX Export**: Export translations as formatted Word documents
 
 ## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- [Bun](https://bun.sh/) (recommended package manager for this template)
-- [Cursor IDE](https://cursor.sh/) (recommended)
+- [Bun](https://bun.sh/) (recommended package manager)
+- [Convex Account](https://convex.dev) (for backend)
+- [Clerk](https://clerk.com) (keyless mode works without an account; claim later)
+- [Google AI API Key](https://ai.google.dev/) (for Gemini)
 
 ### Installation
 
-1. **Download Cursor IDE**
-   - Visit [cursor.sh](https://cursor.sh/) and download the latest version
-
-2. **Clone the repository**
-   ```bash
-   git clone https://github.com/mwijanarko1/template.git
-   cd template
-   ```
-
-3. **Install dependencies**
+1. **Install dependencies**
    ```bash
    bun install
    ```
+
+2. **Set up environment variables**
+   Copy `.env.example` to `.env.local` and fill in your credentials:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+3. **Set up Convex**
+   ```bash
+   npx convex dev
+   ```
+   This will create a new Convex deployment and generate the `_generated` files.
 
 4. **Start the development server**
    ```bash
    bun run dev
    ```
 
-5. **Open Cursor Composer**
-   - Press `CMD + I` to open the Composer
-   - Make sure to select the "Agent" mode
+## Environment Variables
 
-6. **Use the AI Agent**
-   - Copy the contents of the `docs/PROMPT.txt` file and paste it into the Composer Agent
-   - Let the AI generate your project structure and components
-   - Chat with the agent to build features - it will handle the coding for you
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key (optional in dev—keyless mode auto-generates) |
+| `CLERK_SECRET_KEY` | Clerk secret key (optional in dev—keyless mode auto-generates) |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL` | Redirect after sign-in |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL` | Redirect after sign-up |
+| `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL |
+| `GOOGLE_API_KEY` | Google Gemini API key |
 
-7. **Fix any issues**
-   - If errors occur, copy/paste the error or screenshot it
-   - Ask the agent to fix the specific error
+**Clerk keyless mode**: Leave keys unset to start. Clerk generates temporary keys and shows a "Claim your application" prompt. Do not mix keyless (`.clerk/.tmp/keyless.json`) with explicit keys in `.env.local`—that causes redirect loops. If switching to manual keys, remove `.clerk/` and set keys in `.env.local`.
 
 ## Project Structure
 
 ```
-template/
-├── docs/                       # Documentation and guides
-│   ├── PROMPT.txt             # AI agent prompt instructions
-│   ├── CURSOR_GUIDE.md        # Comprehensive Cursor IDE guide
-│   ├── clerk/                 # Clerk authentication guides
-│   │   └── clerk-auth-guide.md
-│   └── convex/                # Convex database guides
-│       ├── convex-db-guide.md
-│       └── convex_rules.mdc
-├── for-agent/                 # Agent-specific instructions
-│   ├── deployment.txt         # Deployment guidelines
-│   ├── guidelines.txt         # General coding guidelines
-│   ├── modes.txt              # Agent modes and instructions
-│   └── ui-guide.txt           # UI/UX guidelines
-├── src/                       # Source code
-│   ├── app/
-│   │   ├── layout.tsx         # Root layout component
-│   │   ├── page.tsx           # Home page
-│   │   ├── globals.css        # Global styles
-│   │   └── favicon.ico        # App favicon
-│   └── components/
-│       └── Hero.tsx           # Hero section component
-├── tailwind.config.js         # Tailwind CSS configuration
-├── next.config.mjs            # Next.js configuration
-├── postcss.config.mjs         # PostCSS configuration
-├── eslint.config.mjs          # ESLint configuration
-└── package.json               # Dependencies and scripts
+src/
+  app/
+    (auth)/
+      sign-in/          # Sign-in page
+      sign-up/          # Sign-up page
+    dashboard/          # Project list
+    project/[id]/       # Document list
+      translate/[doc]/  # Translation workspace
+    page.tsx            # Landing page
+    layout.tsx          # Root layout
+  components/
+    marketing/          # Landing page components
+    ui/                 # shadcn components
+  lib/
+    providers.tsx       # Convex provider
+    types.ts            # TypeScript types
+    env.ts              # Environment validation
+convex/
+  schema.ts             # Database schema
+  users.ts              # User functions
+  projects.ts           # Project functions
+  documents.ts          # Document functions
+  segments.ts           # Text segment functions
+  translations.ts       # Translation functions
 ```
 
-## Documentation
+## MVP Phases
 
-### Codebase Architecture
-For a comprehensive overview of the codebase structure, architecture diagrams, data flows, and navigation guide, see [`docs/CODEBASE_MAP.md`](docs/CODEBASE_MAP.md).
+- [x] Phase 1: Foundation (auth, Convex, landing page)
+- [x] Phase 2: Dashboard and project management
+- [ ] Phase 3: OCR pipeline (Gemini)
+- [ ] Phase 4: AI Translation (Gemini)
+- [x] Phase 5: Translation workspace UI
+- [ ] Phase 6: DOCX export
 
-### Cursor IDE Guide
-Check `docs/CURSOR_GUIDE.md` for detailed instructions on using Cursor IDE effectively with this template.
-
-### Authentication (Clerk)
-The `docs/clerk/` directory contains guides for integrating Clerk authentication into your project.
-
-### Backend/Database (Convex)
-The `docs/convex/` directory contains guides for setting up Convex as your backend and database solution.
-
-### Agent Instructions
-The `for-agent/` directory contains instructions that help the AI agent understand how to work with your project:
-- **deployment.txt**: Deployment best practices
-- **guidelines.txt**: General coding standards
-- **modes.txt**: Different agent modes and when to use them
-- **ui-guide.txt**: UI/UX design guidelines
-
-## Testing
-
-Run the test suite:
+## Scripts
 
 ```bash
-bun run test        # Watch mode
-bun run test:run    # Single run
+bun run dev        # Start development server
+bun run build      # Build for production
+bun run start      # Start production server
+bun run test       # Run tests
 ```
-
-Tests use Vitest and React Testing Library. Add `*.test.tsx` files next to your components.
-
-## Environment
-
-Copy `.env.example` to `.env.local` and fill in values. Use `getEnv()` from `src/lib/env.ts` for validated access. Extend the Zod schema when adding Clerk, Convex, or other services.
-
-## Customization
-
-### Styling
-- Modify `tailwind.config.js` to add custom colors, fonts, or animations
-- Update `src/app/globals.css` for global styles
-- Components use Tailwind utility classes for easy customization
-
-### Components
-- Add new components in `src/components/`
-- Import and use them in your pages
-- Follow the existing Hero component pattern
-
-## Deployment
-
-### Build for Production
-```bash
-bun run build
-```
-
-### Start Production Server
-```bash
-bun run start
-```
-
-The template is ready to deploy to Vercel, Netlify, or any other hosting platform that supports Next.js.
-
-## Contributing
-
-This template is designed to be extended and customized. Feel free to:
-- Add new components
-- Modify the styling
-- Extend functionality
-- Share your improvements
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+MIT License - see [LICENSE](LICENSE) for details.
