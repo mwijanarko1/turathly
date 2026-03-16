@@ -1,6 +1,7 @@
 import { internalMutation, mutation, internalQuery, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthorizedDocument, requireAuthorizedSegment } from "./lib/auth";
+import { assertMaxLength, MAX_SEGMENT_TEXT_LENGTH } from "./lib/limits";
 
 export const listByDocument = query({
   args: { documentId: v.id("documents") },
@@ -12,7 +13,7 @@ export const listByDocument = query({
 
     return await ctx.db
       .query("segments")
-      .withIndex("by_documentId", (q) => q.eq("documentId", args.documentId))
+      .withIndex("by_documentId_pageNumber_orderIndex", (q) => q.eq("documentId", args.documentId))
       .order("asc")
       .collect();
   },
@@ -44,7 +45,7 @@ export const listByDocumentInternal = internalQuery({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("segments")
-      .withIndex("by_documentId", (q) => q.eq("documentId", args.documentId))
+      .withIndex("by_documentId_pageNumber_orderIndex", (q) => q.eq("documentId", args.documentId))
       .order("asc")
       .collect();
   },
@@ -80,6 +81,7 @@ export const create = internalMutation({
     orderIndex: v.number(),
   },
   handler: async (ctx, args) => {
+    assertMaxLength("Segment text", args.text, MAX_SEGMENT_TEXT_LENGTH);
     return await ctx.db.insert("segments", args);
   },
 });
@@ -91,7 +93,9 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     await requireAuthorizedSegment(ctx, args.segmentId);
-    await ctx.db.patch(args.segmentId, { text: args.text.trim() });
+    const trimmedText = args.text.trim();
+    assertMaxLength("Segment text", trimmedText, MAX_SEGMENT_TEXT_LENGTH);
+    await ctx.db.patch(args.segmentId, { text: trimmedText });
   },
 });
 
@@ -112,6 +116,7 @@ export const batchCreate = internalMutation({
   },
   handler: async (ctx, args) => {
     for (const segment of args.segments) {
+      assertMaxLength("Segment text", segment.text, MAX_SEGMENT_TEXT_LENGTH);
       await ctx.db.insert("segments", segment);
     }
   },

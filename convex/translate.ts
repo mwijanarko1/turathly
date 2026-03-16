@@ -1,11 +1,11 @@
 "use node";
 
-import { jsonrepair } from "jsonrepair";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import { internalAction } from "./_generated/server";
+import { getResponseText, parseJsonResponse } from "./lib/ai";
 
 type TranslationResponse = {
   translations?: Array<{
@@ -21,20 +21,6 @@ function requireGoogleApiKey() {
   }
 
   return apiKey;
-}
-
-function parseJsonResponse<T>(value: string): T {
-  const trimmed = value.trim();
-  const withoutFence = trimmed
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "");
-
-  try {
-    return JSON.parse(withoutFence) as T;
-  } catch {
-    return JSON.parse(jsonrepair(withoutFence)) as T;
-  }
 }
 
 function chunk<T>(items: T[], size: number) {
@@ -144,7 +130,8 @@ export const translateDocument = internalAction({
 
       for (const segmentBatch of chunk(segments, 5)) {
         const result = await model.generateContent(buildPrompt(genre, segmentBatch, segments));
-        const parsed = parseJsonResponse<TranslationResponse>(result.response.text());
+        const responseText = getResponseText(result.response, "Translation model");
+        const parsed = parseJsonResponse<TranslationResponse>(responseText, "Translation model");
 
         const translationMap = new Map(
           (parsed.translations ?? [])
@@ -187,6 +174,12 @@ export const translatePage = internalAction({
     pageNumber: v.number(),
   },
   handler: async (ctx, args) => {
+    await ctx.runMutation(internal.documents.updateStatus, {
+      id: args.documentId,
+      status: "translating",
+      errorMessage: undefined,
+    });
+
     try {
       const metadata = await ctx.runQuery(internal.documents.getForProcessing, {
         documentId: args.documentId,
@@ -220,7 +213,8 @@ export const translatePage = internalAction({
 
       for (const segmentBatch of chunk(segments, 5)) {
         const result = await model.generateContent(buildPrompt(genre, segmentBatch, allSegments));
-        const parsed = parseJsonResponse<TranslationResponse>(result.response.text());
+        const responseText = getResponseText(result.response, "Translation model");
+        const parsed = parseJsonResponse<TranslationResponse>(responseText, "Translation model");
 
         const translationMap = new Map(
           (parsed.translations ?? [])

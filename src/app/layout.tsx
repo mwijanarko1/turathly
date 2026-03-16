@@ -29,13 +29,23 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
   title: {
     default: "Turathly — Context-aware translation for Islamic texts",
     template: "%s | Turathly",
   },
-  description: "A translation workspace designed for scholars working with classical Islamic books. Upload PDFs, OCR Arabic text, and translate with AI assistance.",
-  keywords: ["Islamic texts", "Arabic translation", "OCR", "AI translation", "classical Arabic", "Islamic scholarship"],
+  description:
+    "A translation workspace designed for scholars working with classical Islamic books. Upload PDFs, OCR Arabic text, and translate with AI assistance.",
+  keywords: [
+    "Islamic texts",
+    "Arabic translation",
+    "OCR",
+    "AI translation",
+    "classical Arabic",
+    "Islamic scholarship",
+  ],
   authors: [{ name: "Turathly" }],
   creator: "Turathly",
   icons: {
@@ -47,7 +57,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Turathly — Context-aware translation for Islamic texts",
-    description: "A translation workspace designed for scholars working with classical Islamic books.",
+    description:
+      "A translation workspace designed for scholars working with classical Islamic books.",
     url: process.env.NEXT_PUBLIC_APP_URL ?? "https://turathly.com",
     siteName: "Turathly",
     images: [
@@ -64,7 +75,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Turathly — Context-aware translation for Islamic texts",
-    description: "A translation workspace designed for scholars working with classical Islamic books.",
+    description:
+      "A translation workspace designed for scholars working with classical Islamic books.",
     images: ["/logo.png"],
   },
   robots: {
@@ -80,6 +92,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* Clerk updates auth-dependent attributes during hydration. */}
       <body
         className={`${sourceSans.variable} ${fraunces.variable} ${notoNaskhArabic.variable} antialiased bg-background text-foreground`}
       >

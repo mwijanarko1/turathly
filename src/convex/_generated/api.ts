@@ -23,6 +23,7 @@ export const api = {
     updateStatus: "documents:updateStatus" as any,
     update: "documents:update" as any,
     remove: "documents:remove" as any,
+    runOCR: "documents:runOCR" as any,
     reOCRPage: "documents:reOCRPage" as any,
     translateDocument: "documents:translateDocument" as any,
     translatePage: "documents:translatePage" as any,

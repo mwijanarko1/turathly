@@ -11,7 +11,9 @@
 import type * as crons from "../crons.js";
 import type * as documents from "../documents.js";
 import type * as export_ from "../export.js";
+import type * as lib_ai from "../lib/ai.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_limits from "../lib/limits.js";
 import type * as ocr from "../ocr.js";
 import type * as projects from "../projects.js";
 import type * as segments from "../segments.js";
@@ -29,7 +31,9 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   documents: typeof documents;
   export: typeof export_;
+  "lib/ai": typeof lib_ai;
   "lib/auth": typeof lib_auth;
+  "lib/limits": typeof lib_limits;
   ocr: typeof ocr;
   projects: typeof projects;
   segments: typeof segments;

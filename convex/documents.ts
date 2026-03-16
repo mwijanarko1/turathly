@@ -7,6 +7,7 @@ import {
   requireAuthorizedDocument,
   requireAuthorizedProject,
 } from "./lib/auth";
+import { assertMaxLength, MAX_TITLE_LENGTH } from "./lib/limits";
 
 async function hydrateDocumentUrl<
   T extends {
@@ -74,6 +75,11 @@ export const getForProcessing = internalQuery({
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
     return await ctx.storage.generateUploadUrl();
   },
 });
@@ -87,6 +93,7 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     await requireAuthorizedProject(ctx, args.projectId);
+    assertMaxLength("Document title", args.title, MAX_TITLE_LENGTH);
 
     let fileUrl = args.fileUrl;
     if (args.storageId) {
@@ -108,13 +115,6 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
-
-    if (args.storageId) {
-      await ctx.scheduler.runAfter(0, internal.ocr.processDocument, {
-        documentId,
-        storageId: args.storageId,
-      });
-    }
 
     return documentId;
   },
@@ -150,6 +150,7 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     await requireAuthorizedDocument(ctx, args.id);
+    assertMaxLength("Document title", args.title, MAX_TITLE_LENGTH);
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
       ...updates,
@@ -166,6 +167,23 @@ export const remove = mutation({
       await ctx.storage.delete(document.storageId);
     }
     await ctx.db.delete(args.id);
+  },
+});
+
+export const runOCR = mutation({
+  args: { documentId: v.id("documents") },
+  handler: async (ctx, args) => {
+    const { document } = await requireAuthorizedDocument(ctx, args.documentId);
+    if (!document.storageId) {
+      throw new Error("Document has no stored file to run OCR.");
+    }
+    if (document.status !== "uploaded" && document.status !== "error") {
+      throw new Error("OCR can only be run on uploaded or failed documents.");
+    }
+    await ctx.scheduler.runAfter(0, internal.ocr.processDocument, {
+      documentId: args.documentId,
+      storageId: document.storageId,
+    });
   },
 });
 
@@ -214,33 +232,3 @@ export const translatePage = mutation({
   },
 });
 
-/**
- * Processes documents that should have OCR or translation running but don't.
- * Called by cron to ensure OCR and translation trigger automatically even if
- * the initial scheduler fails.
- */
-export const processPendingDocuments = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-    const documents = await ctx.db.query("documents").collect();
-
-    for (const doc of documents) {
-      if (doc.status === "uploaded" && doc.storageId) {
-        await ctx.scheduler.runAfter(0, internal.ocr.processDocument, {
-          documentId: doc._id,
-          storageId: doc.storageId,
-        });
-      } else if (doc.status === "ocr_complete") {
-        const segments = await ctx.db
-          .query("segments")
-          .withIndex("by_documentId", (q) => q.eq("documentId", doc._id))
-          .first();
-        if (segments) {
-          await ctx.scheduler.runAfter(0, internal.translate.translateDocument, {
-            documentId: doc._id,
-          });
-        }
-      }
-    }
-  },
-});

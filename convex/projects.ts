@@ -6,6 +6,7 @@ import {
   requireAuthorizedProject,
   requireCurrentConvexUser,
 } from "./lib/auth";
+import { assertMaxLength, MAX_TITLE_LENGTH } from "./lib/limits";
 
 export const listByOwner = query({
   args: {},
@@ -53,6 +54,7 @@ export const create = mutation({
     )),
   },
   handler: async (ctx, args) => {
+    assertMaxLength("Project title", args.title, MAX_TITLE_LENGTH);
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Not authenticated");
@@ -94,6 +96,7 @@ export const update = mutation({
   },
   handler: async (ctx, args) => {
     await requireAuthorizedProject(ctx, args.id);
+    assertMaxLength("Project title", args.title, MAX_TITLE_LENGTH);
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
       ...updates,

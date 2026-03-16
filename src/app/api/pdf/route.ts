@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -5,6 +6,8 @@ import { NextRequest, NextResponse } from "next/server";
  * Only allows URLs from Convex storage (convex.cloud/api/storage).
  */
 export async function GET(request: NextRequest) {
+  await auth.protect();
+
   const urlParam = request.nextUrl.searchParams.get("url");
   if (!urlParam) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 });

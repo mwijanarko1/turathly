@@ -2,10 +2,15 @@
 
 import { useEffect, useRef } from "react";
 
-const LOG_ENDPOINT = "http://127.0.0.1:7548/ingest/01db9484-543f-4c1c-9919-21b32d18e1b1";
-const SESSION_ID = "af243e";
+const isDevelopment = process.env.NODE_ENV === "development";
+const LOG_ENDPOINT = process.env.NEXT_PUBLIC_SIGNIN_DEBUG_ENDPOINT;
+const SESSION_ID = process.env.NEXT_PUBLIC_SIGNIN_DEBUG_SESSION_ID ?? "local";
 
 function log(location: string, message: string, data: Record<string, unknown>, hypothesisId: string) {
+  if (!isDevelopment || !LOG_ENDPOINT) {
+    return;
+  }
+
   fetch(LOG_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-Debug-Session-Id": SESSION_ID },
@@ -24,6 +29,10 @@ export function SignInDebug() {
   const mounted = useRef(false);
 
   useEffect(() => {
+    if (!isDevelopment || !LOG_ENDPOINT) {
+      return;
+    }
+
     if (mounted.current) return;
     mounted.current = true;
 

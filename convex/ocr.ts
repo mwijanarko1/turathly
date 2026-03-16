@@ -1,10 +1,10 @@
 "use node";
 
-import { jsonrepair } from "jsonrepair";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
+import { getResponseText, parseJsonResponse } from "./lib/ai";
 
 type OcrSegment = {
   text: string;
@@ -43,20 +43,6 @@ function requireGoogleApiKey() {
   }
 
   return apiKey;
-}
-
-function parseJsonResponse<T>(value: string): T {
-  const trimmed = value.trim();
-  const withoutFence = trimmed
-    .replace(/^```json\s*/i, "")
-    .replace(/^```\s*/i, "")
-    .replace(/\s*```$/i, "");
-
-  try {
-    return JSON.parse(withoutFence) as T;
-  } catch {
-    return JSON.parse(jsonrepair(withoutFence)) as T;
-  }
 }
 
 function normalizeNumber(value: number) {
@@ -142,7 +128,8 @@ export const processDocument = internalAction({
         },
       ]);
 
-      const parsed = parseJsonResponse<OcrResponse>(result.response.text());
+      const responseText = getResponseText(result.response, "OCR model");
+      const parsed = parseJsonResponse<OcrResponse>(responseText, "OCR model");
       const normalized = normalizeSegments(args.documentId, parsed);
 
       await ctx.runMutation(internal.translations.clearByDocument, {
@@ -168,10 +155,6 @@ export const processDocument = internalAction({
         pageCount: normalized.pageCount,
         errorMessage: undefined,
       });
-
-      await ctx.scheduler.runAfter(0, internal.translate.translateDocument, {
-        documentId: args.documentId,
-      });
     } catch (error) {
       const message = error instanceof Error ? error.message : "OCR failed";
       await ctx.runMutation(internal.documents.updateStatus, {
@@ -191,6 +174,12 @@ export const processSinglePage = internalAction({
     pageNumber: v.number(),
   },
   handler: async (ctx, args) => {
+    await ctx.runMutation(internal.documents.updateStatus, {
+      id: args.documentId,
+      status: "ocr_processing",
+      errorMessage: undefined,
+    });
+
     try {
       const blob = await ctx.storage.get(args.storageId);
       if (!blob) {
@@ -219,7 +208,8 @@ export const processSinglePage = internalAction({
         },
       ]);
 
-      const parsed = parseJsonResponse<OcrResponse>(result.response.text());
+      const responseText = getResponseText(result.response, "OCR model");
+      const parsed = parseJsonResponse<OcrResponse>(responseText, "OCR model");
       const normalized = normalizeSegments(args.documentId, parsed);
 
       await ctx.runMutation(internal.segments.clearByPage, {
@@ -234,9 +224,10 @@ export const processSinglePage = internalAction({
         });
       }
 
-      await ctx.scheduler.runAfter(0, internal.translate.translatePage, {
-        documentId: args.documentId,
-        pageNumber: args.pageNumber,
+      await ctx.runMutation(internal.documents.updateStatus, {
+        id: args.documentId,
+        status: "ocr_complete",
+        errorMessage: undefined,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "OCR failed";

@@ -1,13 +1,6 @@
 "use client";
 
-// Polyfill DOMMatrix for SSR environments where react-pdf might be evaluated
-if (typeof window === "undefined") {
-  // @ts-ignore
-  global.DOMMatrix = class DOMMatrix {
-    constructor() {}
-  };
-}
-
+import "@/lib/pdfjs-polyfill";
 import { ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
@@ -15,21 +8,21 @@ import type { Segment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// Worker copied to public/ by postinstall; matches react-pdf's pdfjs-dist 5.4.296
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 type PdfViewerProps = {
   fileUrl?: string | null;
   pageNumber: number;
+  totalPages?: number;
   selectedSegment?: Segment | null;
   onLoadError?: () => void;
   onDelete?: () => void;
   onPageChange?: (page: number) => void;
+  onNumPages?: (numPages: number) => void;
 };
 
-export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, onDelete, onPageChange }: PdfViewerProps) {
+export function PdfViewer({ fileUrl, pageNumber, totalPages: totalPagesProp, selectedSegment, onLoadError, onDelete, onPageChange, onNumPages }: PdfViewerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const jumpInputRef = useRef<HTMLInputElement | null>(null);
   const [pageWidth, setPageWidth] = useState(0);
@@ -80,7 +73,7 @@ export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, o
   };
 
   const handleNextPage = () => {
-    if (onPageChange && numPages !== null && pageNumber < numPages) {
+    if (onPageChange && pageNumber < totalPages) {
       onPageChange(pageNumber + 1);
     }
   };
@@ -88,8 +81,8 @@ export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, o
   const handleJumpToPage = (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = parseInt(jumpValue, 10);
-    if (!Number.isFinite(parsed) || !onPageChange || !numPages) return;
-    const clamped = Math.max(1, Math.min(numPages, parsed));
+    if (!Number.isFinite(parsed) || !onPageChange || !totalPages) return;
+    const clamped = Math.max(1, Math.min(totalPages, parsed));
     onPageChange(clamped);
     setJumpValue("");
     jumpInputRef.current?.blur();
@@ -106,7 +99,7 @@ export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, o
         }
       : null;
 
-  const totalPages = numPages ?? 1;
+  const totalPages = totalPagesProp ?? numPages ?? 1;
   const canNavigate = Boolean(onPageChange && fileUrl && !hasLoadError);
 
   return (
@@ -132,7 +125,7 @@ export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, o
                 variant="outline"
                 size="sm"
                 onClick={handleNextPage}
-                disabled={numPages === null || pageNumber >= numPages}
+                disabled={pageNumber >= totalPages}
                 aria-label="Next page"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -200,7 +193,10 @@ export function PdfViewer({ fileUrl, pageNumber, selectedSegment, onLoadError, o
               key={fileUrl}
               file={fileUrl}
               loading=""
-              onLoadSuccess={({ numPages: n }) => setNumPages(n)}
+              onLoadSuccess={({ numPages: n }) => {
+                setNumPages(n);
+                onNumPages?.(n);
+              }}
               onLoadError={handleLoadError}
               onSourceError={handleLoadError}
             >

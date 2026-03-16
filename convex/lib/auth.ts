@@ -1,5 +1,10 @@
 import type { Doc, Id } from "../_generated/dataModel";
 import type { MutationCtx, QueryCtx } from "../_generated/server";
+import {
+  assertMaxLength,
+  MAX_EMAIL_LENGTH,
+  MAX_USER_NAME_LENGTH,
+} from "./limits";
 
 type DbCtx = Pick<QueryCtx, "auth" | "db"> | Pick<MutationCtx, "auth" | "db">;
 
@@ -48,18 +53,24 @@ export async function getOrCreateConvexUser(
     return existing;
   }
 
+  const email = identity.email ?? "";
+  const name = identity.name ?? undefined;
+
+  assertMaxLength("Email", email, MAX_EMAIL_LENGTH);
+  assertMaxLength("Name", name, MAX_USER_NAME_LENGTH);
+
   const userId = await ctx.db.insert("users", {
     clerkId: identity.subject,
-    name: identity.name ?? undefined,
-    email: identity.email ?? "",
+    name,
+    email,
     createdAt: Date.now(),
   });
 
   return {
     _id: userId,
     clerkId: identity.subject,
-    name: identity.name ?? undefined,
-    email: identity.email ?? "",
+    name,
+    email,
     createdAt: Date.now(),
     _creationTime: Date.now(),
   };
