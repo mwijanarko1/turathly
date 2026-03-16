@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -8,7 +11,64 @@ import {
   FileText,
 } from "lucide-react";
 
+const ARABIC_SAMPLE = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+يَقُولُ عَبْدُ الْوَاحِدِ بْنُ عَاشِرٍ مُبْتَدِئًا بِاسْمِ الْإِلَهِ الْقَادِرِ
+الْحَمْدُ لِلَّهِ الَّذِي عَلَّمَنَا مِنَ الْعُلُومِ مَا بِهِ كَلَّفَنَا
+صَلَّى وَسَلَّمَ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَالْمُقْتَدِي
+وَبَعْدُ فَالْعَوْنُ مِنَ اللَّهِ الْمَجِيدِ فِي نَظْمِ أَبْيَاتٍ لِلْأُمِّيِّ تُفِيدُ
+فِي عَقْدِ الْأَشْعَرِيِّ وَفِقْهِ مَالِكٍ وَفِي طَرِيقَةِ الْجُنَيْدِ السَّالِكِ مُقَدِّمَةً لِكِتَابِ الْاِعْتِقَادِ مُعَيِّنَةً لِقَارِيهَا عَلَى الْمُرَادِ
+وَحُكْمُنَا الْعَقْلِيُّ قَضِيَّةٌ بِلَا وَقْفٍ عَلَى عَادَةٍ أَوْ وَضْعِ جَلَا
+أَقْسَامُ مُقْتَضَاهُ بِالْحَصْرِ تَمَازَ وَهِيَ الْوُجُوبُ الْاِسْتِحَالَةُ الْجَوَازُ
+فَوَاجِبٌ لَا يَقْبَلُ النَّفْيَ مُحَالُ وَمَا أَبَى الثُّبُوتَ عُقْلَاءُ الْمَحَالِ
+وَجَائِزًا مَا قَبِلَ الْأَمْرَيْنِ سَمْ لِلضَّرَرِيِّ وَالنَّظَرِيِّ كُلَّ قِسْمِ`;
+
+const TRANSLATION_SAMPLE = `In the name of Allah, the Most Gracious, the Most Merciful.
+
+Abdul Wahid bin Ashir says, beginning with the name of God, the All-Powerful.
+
+All praise is due to Allah, who taught us from the sciences what He commanded us.
+
+May peace and blessings be upon Muhammad, his family, his companions, and his followers.
+
+And thereafter, assistance comes from Allah, the Most Glorious, in composing verses that benefit the illiterate.
+
+This is in the doctrine of Ash'ari and the jurisprudence of Malik, and in the path of Junayd, the traveler. It is a preface to the book of belief, helping its reader towards the intended meaning.
+
+Our rational judgment is a matter without dependence on custom or a clear convention.
+
+Its requirements are divided into three parts exclusively: obligation, impossibility, and permissibility.
+
+What is obligatory cannot be denied. What is impossible is what the wise deem impossible to prove.
+
+And permissible is what accepts both matters. Name each division: the necessary and the theoretical.`;
+
+function highlightMatch(text: string, query: string) {
+  if (!query.trim()) return text;
+  const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="bg-accent/30 rounded px-0.5">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
+
 export function Hero() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [arabicText, setArabicText] = useState(ARABIC_SAMPLE);
+  const [translationText, setTranslationText] = useState(TRANSLATION_SAMPLE);
+
+  const arabicHighlighted = useMemo(
+    () => highlightMatch(arabicText, searchQuery),
+    [arabicText, searchQuery]
+  );
+  const translationHighlighted = useMemo(
+    () => highlightMatch(translationText, searchQuery),
+    [translationText, searchQuery]
+  );
   return (
     <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden pt-32 pb-24">
       {/* Painterly background effect */}
@@ -54,10 +114,17 @@ export function Hero() {
                 <div className="w-3 h-3 rounded-full bg-yellow-400/50" />
                 <div className="w-3 h-3 rounded-full bg-green-400/50" />
               </div>
-              <div className="flex items-center gap-4 bg-background border border-border rounded-md px-3 py-1 text-xs text-muted-foreground font-medium w-1/3">
-                <Search aria-hidden="true" className="w-3 h-3" />
-                <span>Search in document…</span>
-              </div>
+              <label className="flex flex-1 max-w-xs items-center gap-2 bg-background border border-border rounded-md px-3 py-2 text-xs font-medium w-1/3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/50 transition-colors">
+                <Search aria-hidden="true" className="w-3 h-3 shrink-0 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search in document…"
+                  className="flex-1 min-w-0 bg-transparent text-foreground placeholder:text-muted-foreground outline-none"
+                  aria-label="Search in document"
+                />
+              </label>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-primary/10 border border-primary/20" />
                 <div className="w-8 h-8 rounded bg-secondary/10 border border-secondary/20" />
@@ -66,62 +133,70 @@ export function Hero() {
 
             {/* Content Mockup */}
             <div className="flex-1 grid grid-cols-3 divide-x divide-border">
-              {/* Column 1: Source PDF */}
+              {/* Column 1: Source PDF (matches workspace PdfViewer) */}
               <div className="p-4 flex flex-col gap-4 overflow-hidden relative">
                 <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1 flex items-center gap-2">
                   <FileText aria-hidden="true" className="w-3 h-3" /> Source
-                  Page
+                  PDF
                 </div>
-                <div className="flex-1 rounded border border-border bg-muted/10 p-4 font-arabic text-right text-lg text-primary opacity-30 select-none">
-                  <div className="h-4 w-3/4 bg-primary/20 rounded mr-auto mb-3" />
-                  <div className="h-4 w-full bg-primary/20 rounded mb-3" />
-                  <div className="h-4 w-5/6 bg-primary/20 rounded mr-auto mb-3" />
-                  <div className="h-4 w-full bg-primary/20 rounded mb-3" />
-                  <div className="h-4 w-2/3 bg-primary/20 rounded mr-auto" />
+                <div className="flex-1 min-h-0 rounded border border-border bg-muted/10 overflow-hidden">
+                  <img
+                    src="/hero-pdf.png"
+                    alt="Example Arabic document page with Basmala and classical text"
+                    className="w-full h-full object-contain object-top"
+                  />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent pointer-events-none" />
               </div>
 
-              {/* Column 2: OCR Arabic */}
+              {/* Column 2: Arabic Source (matches workspace column label) */}
               <div className="p-4 flex flex-col gap-4 overflow-hidden relative bg-muted/5">
                 <div className="text-[10px] font-bold text-primary uppercase tracking-widest mb-1 flex items-center gap-2">
-                  <Sparkles aria-hidden="true" className="w-3 h-3" /> Extracted
-                  Arabic
+                  <Sparkles aria-hidden="true" className="w-3 h-3" /> Arabic
+                  Source
                 </div>
-                <div className="flex-1 font-arabic text-right text-xl leading-relaxed text-foreground">
-                  بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
-                  <br />
-                  الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
-                  <br />
-                  الرَّحْمَنِ الرَّحِيمِ مَالِكِ يَوْمِ الدِّينِ
-                  <br />
-                  إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ
-                  <br />
-                  اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ
+                <div className="flex-1 min-h-0">
+                  {searchQuery.trim() ? (
+                    <div
+                      className="font-arabic text-right text-xl leading-relaxed text-foreground overflow-y-auto h-full whitespace-pre-wrap"
+                      dir="rtl"
+                    >
+                      {arabicHighlighted}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={arabicText}
+                      onChange={(e) => setArabicText(e.target.value)}
+                      dir="rtl"
+                      className="font-arabic w-full h-full min-h-[120px] text-right text-xl leading-relaxed text-foreground bg-transparent border-0 resize-none overflow-hidden focus:outline-none focus:ring-0 placeholder:text-muted-foreground/50"
+                      placeholder="Arabic source text…"
+                      aria-label="Arabic source text"
+                    />
+                  )}
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent pointer-events-none" />
               </div>
 
-              {/* Column 3: Translation */}
+              {/* Column 3: Translation Editor (matches workspace column label) */}
               <div className="p-4 flex flex-col gap-4 overflow-hidden relative">
                 <div className="text-[10px] font-bold text-accent uppercase tracking-widest mb-1 flex items-center gap-2">
                   <Languages aria-hidden="true" className="w-3 h-3" />{" "}
-                  Translation Draft
+                  Translation Editor
                 </div>
-                <div className="flex-1 font-sans text-sm leading-relaxed text-foreground/80 space-y-3">
-                  <div className="p-2 rounded bg-accent/5 border-l-2 border-accent mb-2">
-                    <p className="font-semibold text-accent text-[10px] uppercase mb-1">
-                      AI Suggestion
-                    </p>
-                    <p>
-                      In the name of Allah, the Most Gracious, the Most
-                      Merciful.
-                    </p>
-                  </div>
-                  <p>All praise is due to Allah, Lord of all the worlds.</p>
-                  <p>The Entirely Merciful, the Especially Merciful.</p>
-                  <p>Sovereign of the Day of Recompense.</p>
-                  <p>It is You we worship and You we ask for help…</p>
+                <div className="flex-1 min-h-0">
+                  {searchQuery.trim() ? (
+                    <div className="font-sans text-sm leading-relaxed text-foreground/80 overflow-y-auto h-full whitespace-pre-wrap">
+                      {translationHighlighted}
+                    </div>
+                  ) : (
+                    <textarea
+                      value={translationText}
+                      onChange={(e) => setTranslationText(e.target.value)}
+                      className="font-sans w-full h-full min-h-[120px] text-sm leading-relaxed text-foreground/80 bg-transparent border-0 resize-none overflow-hidden focus:outline-none focus:ring-0 placeholder:text-muted-foreground/50"
+                      placeholder="Enter translation…"
+                      aria-label="Translation"
+                    />
+                  )}
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent pointer-events-none" />
               </div>
