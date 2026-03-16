@@ -89,6 +89,7 @@ export default function RootLayout({
           signInForceRedirectUrl="/dashboard"
           signUpForceRedirectUrl="/dashboard"
           afterSignOutUrl="/"
+          dynamic
         >
           <ConvexClientProvider>
             <a

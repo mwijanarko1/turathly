@@ -8,9 +8,14 @@
  * @module
  */
 
+import type * as crons from "../crons.js";
 import type * as documents from "../documents.js";
+import type * as export_ from "../export.js";
+import type * as lib_auth from "../lib/auth.js";
+import type * as ocr from "../ocr.js";
 import type * as projects from "../projects.js";
 import type * as segments from "../segments.js";
+import type * as translate from "../translate.js";
 import type * as translations from "../translations.js";
 import type * as users from "../users.js";
 
@@ -21,9 +26,14 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  crons: typeof crons;
   documents: typeof documents;
+  export: typeof export_;
+  "lib/auth": typeof lib_auth;
+  ocr: typeof ocr;
   projects: typeof projects;
   segments: typeof segments;
+  translate: typeof translate;
   translations: typeof translations;
   users: typeof users;
 }>;

@@ -49,12 +49,25 @@ export function Footer() {
         </div>
         
         <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-xs text-muted-foreground font-light tracking-wide">
-            © {new Date().getFullYear()} Turathly. All rights reserved.
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-muted-foreground font-light tracking-wide">
+              © {new Date().getFullYear()} Turathly. All rights reserved.
+            </p>
+            <p className="text-xs text-muted-foreground font-light tracking-wide">
+              Made by{" "}
+              <a
+                href="https://mikhailwijanarko.xyz"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 underline underline-offset-2"
+              >
+                @mikhailbuilds
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-8">
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light">Privacy Policy</Link>
-            <Link href="#" className="text-xs text-muted-foreground hover:text-primary font-light">Terms of Service</Link>
+            <Link href="/privacy" className="text-xs text-muted-foreground hover:text-primary font-light">Privacy Policy</Link>
+            <Link href="/terms" className="text-xs text-muted-foreground hover:text-primary font-light">Terms of Service</Link>
           </div>
         </div>
       </div>

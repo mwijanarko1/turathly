@@ -1,19 +1,16 @@
-import { mutation, query } from "./_generated/server";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import {
+  getOrCreateConvexUser,
+  getAuthorizedProject,
+  requireAuthorizedProject,
+  requireCurrentConvexUser,
+} from "./lib/auth";
 
 export const listByOwner = query({
   args: {},
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      return [];
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
-
+    const user = await requireCurrentConvexUser(ctx).catch(() => null);
     if (!user) {
       return [];
     }
@@ -21,11 +18,20 @@ export const listByOwner = query({
     return await ctx.db
       .query("projects")
       .withIndex("by_ownerId", (q) => q.eq("ownerId", user._id))
-      .order("desc");
+      .order("desc")
+      .collect();
   },
 });
 
 export const getById = query({
+  args: { id: v.id("projects") },
+  handler: async (ctx, args) => {
+    const result = await getAuthorizedProject(ctx, args.id);
+    return result?.project ?? null;
+  },
+});
+
+export const getInternal = internalQuery({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
@@ -52,14 +58,11 @@ export const create = mutation({
       throw new Error("Not authenticated");
     }
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await getOrCreateConvexUser(ctx, {
+      subject: identity.subject,
+      name: identity.name,
+      email: identity.email,
+    });
 
     const now = Date.now();
     return await ctx.db.insert("projects", {
@@ -78,6 +81,8 @@ export const update = mutation({
   args: {
     id: v.id("projects"),
     title: v.optional(v.string()),
+    sourceLang: v.optional(v.string()),
+    targetLang: v.optional(v.string()),
     genre: v.optional(v.union(
       v.literal("general"),
       v.literal("tafsir"),
@@ -88,6 +93,7 @@ export const update = mutation({
     )),
   },
   handler: async (ctx, args) => {
+    await requireAuthorizedProject(ctx, args.id);
     const { id, ...updates } = args;
     await ctx.db.patch(id, {
       ...updates,
@@ -99,6 +105,7 @@ export const update = mutation({
 export const remove = mutation({
   args: { id: v.id("projects") },
   handler: async (ctx, args) => {
+    await requireAuthorizedProject(ctx, args.id);
     await ctx.db.delete(args.id);
   },
 });

@@ -36,6 +36,32 @@ export const create = mutation({
   },
 });
 
+export const ensureCurrentUser = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (existing) {
+      return existing._id;
+    }
+
+    return await ctx.db.insert("users", {
+      clerkId: identity.subject,
+      email: identity.email ?? "",
+      name: identity.name ?? undefined,
+      createdAt: Date.now(),
+    });
+  },
+});
+
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
